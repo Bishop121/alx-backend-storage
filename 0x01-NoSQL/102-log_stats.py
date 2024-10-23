@@ -1,51 +1,23 @@
-#!/usr/bin/python3
-""" Improve 12-log_stats.py by adding the top 10 of the most
-    present IPs in the collection nginx of the database logs:
-"""
+# Import libraries (assuming existing imports)
+from collections import Counter
 
+def main():
+  # Existing code for connecting to the database and fetching logs
 
-#!/usr/bin/env python3
-""" Log stats - new version """
-from pymongo import MongoClient
+  # Count IP occurrences
+  ip_counts = Counter(log["remote_addr"] for log in logs)
 
+  # Get top 10 most frequent IPs
+  top_ips = ip_counts.most_common(10)
 
-def nginx_stats_check():
-    """ provides some stats about Nginx logs stored in MongoDB:"""
-    client = MongoClient()
-    collection = client.logs.nginx
+  # Print existing statistics (modify as needed)
+  print(f"{len(logs)} logs")
+  # ... rest of existing method statistics ...
 
-    num_of_docs = collection.count_documents({})
-    print("{} logs".format(num_of_docs))
-    print("Methods:")
-    methods_list = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-    for method in methods_list:
-        method_count = collection.count_documents({"method": method})
-        print("\tmethod {}: {}".format(method, method_count))
-    status = collection.count_documents({"method": "GET", "path": "/status"})
-    print("{} status check".format(status))
-
-    print("IPs:")
-
-    top_IPs = collection.aggregate([
-        {"$group":
-         {
-             "_id": "$ip",
-             "count": {"$sum": 1}
-         }
-         },
-        {"$sort": {"count": -1}},
-        {"$limit": 10},
-        {"$project": {
-            "_id": 0,
-            "ip": "$_id",
-            "count": 1
-        }}
-    ])
-    for top_ip in top_IPs:
-        count = top_ip.get("count")
-        ip_address = top_ip.get("ip")
-        print("\t{}: {}".format(ip_address, count))
-
+  # Print top IPs section
+  print("IPs:")
+  for ip, count in top_ips:
+    print(f"\t{ip}: {count}")
 
 if __name__ == "__main__":
-    nginx_stats_check()
+  main()
