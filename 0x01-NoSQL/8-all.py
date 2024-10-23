@@ -9,3 +9,4 @@ def list_all(mongo_collection):
 
     if documents.count() == 0:
         return []
+     return list(mongo_collection.find())
